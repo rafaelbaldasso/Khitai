@@ -2,18 +2,7 @@
 
 ### Requirements
 # Kali Linux (recommended OS)
-# Python3
-# Assetfinder -> go install github.com/tomnomnom/assetfinder@latest
-# Gobuster -> apt install gobuster
-# Subfinder -> go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-# Nmap -> apt install nmap
-# Seclists -> apt install seclists
-# httpx -> go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-# Waybackurls -> go install github.com/tomnomnom/waybackurls@latest
-# Shcheck -> wget https://raw.githubusercontent.com/santoru/shcheck/master/shcheck.py
-# SSLScan -> apt install sslscan
-# WhatWeb -> apt install whatweb
-# Slowloris -> wget https://raw.githubusercontent.com/Ogglas/Orignal-Slowloris-HTTP-DoS/master/slowloris.pl
+# Run install.sh to install: Python3, Go, Assetfinder, Gobuster, Subfinder, Nmap, Seclists, httpx, Waybackurls, Shcheck, SSLScan, WhatWeb, Slowloris
 
 clear
 echo -e "\033[38;2;220;20;60m
