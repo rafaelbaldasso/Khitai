@@ -32,30 +32,36 @@ else
     do
         case $opt in
             "Security Headers")
-                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers (HTTP)\033[m";
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers (HTTP)\033[m";echo
+                echo -e '\033[38;2;0;255;255mpython3 shcheck.py http://'$target'\033[m'
                 python3 shcheck.py http://$target
                 echo;echo "===========================================================================";echo;
-                echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers (HTTPS)\033[m";
+                echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers (HTTPS)\033[m";echo
+                echo -e '\033[38;2;0;255;255mpython3 shcheck.py https://'$target'\033[m'
                 python3 shcheck.py https://$target
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
             "HTTP Headers & Methods")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Headers & Methods\033[m";echo
+                echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -X OPTIONS -s\033[m';echo
                 curl -I $target -L -k -X OPTIONS -s
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
             "SSL Scan")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> SSL Scans\033[m";echo
+                echo -e '\033[38;2;0;255;255msslscan '$target'\033[m';echo
                 sslscan $target
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
             "Check WAF")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> WAF\033[m";echo
+                echo -e '\033[38;2;0;255;255mwafw00f -o - http://'$target'\033[m';echo
                 wafw00f -o - http://$target
-                echo
+                echo;echo "===========================================================================";echo
+                echo -e '\033[38;2;0;255;255mwafw00f -o - https://'$target'\033[m';echo
                 wafw00f -o - https://$target
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
@@ -63,17 +69,21 @@ else
             "Domain Spoofing")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Domain Spoofing\033[m";echo
 		echo -e "\033[38;2;255;228;181m-> SPF: \033[m";echo
+		echo -e '\033[38;2;0;255;255mhost -t txt '$target'\033[m';echo
 		host -t txt $target
 		echo;echo -e "\033[38;2;255;228;181m-> DMARC: \033[m";echo
+		echo -e '\033[38;2;0;255;255mhost -t txt _dmarc.'$target'\033[m';echo
 		host -t txt _dmarc.$target
 		echo;read -p $'\033[38;2;255;228;181m-> DKIM Selector (optional for DKIM check): \033[m' selector
 			if [[ ! -z $selector  ]]
 			then
-				echo;host -t txt $selector._domainkey.$target
+				echo;echo -e '\033[38;2;0;255;255mhost -t txt '$selector'._domainkey.'$target'\033[m';echo
+				host -t txt $selector._domainkey.$target
 			fi
 		echo;read -p $'\033[38;2;255;228;181m-> Send spoofing test - if yes, type the recipient | if no, just press ENTER: \033[m' recipient
 			if [[ ! -z $recipient  ]]
 			then
+				echo;echo -e '\033[38;2;0;255;255msendemail -f spoofed@'$target' -t '$recipient' -u "Spoofing Test" -m "Domain '$target' vulnerable to mail spoofing." -o tls=no\033[m'
 				echo;sendemail -f spoofed@$target -t $recipient -u "Spoofing Test" -m "Domain $target vulnerable to mail spoofing." -o tls=no
 				echo;echo -e "\033[38;2;255;228;181m-> Spoofing Mail Sent.\033[m"
                 	fi
@@ -82,12 +92,14 @@ else
                 ;;
             "Zone Transfer")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Zone Transfer\033[m";echo
+                echo -e "\033[38;2;0;255;255mfor nserver in \$(host -t ns "$target" | cut -d ' ' -f4 | sed 's/.$//');do host -l -a "$target" \$nserver;done\033[m";echo
 		for nserver in $(host -t ns $target | cut -d ' ' -f4 | sed 's/.$//');do host -l -a $target $nserver;done
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
             "TCP Port Scan")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> TCP Port Scan\033[m";echo
+                echo -e "\033[38;2;0;255;255mnmap -Pn -n -p- -T4 --open "$target"\033[m";echo
                 nmap -Pn -n -p- -T4 --open $target
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
@@ -95,7 +107,7 @@ else
             "Slowloris DoS Test")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Slowloris DoS Test\033[m";echo
                 read -p $'\033[38;2;255;228;181m-> Target port: \033[m' port
-		echo
+		echo;echo -e "\033[38;2;0;255;255mperl slowloris.pl -test -dns "$target" -port "$port"\033[m";echo
                 perl slowloris.pl -test -dns $target -port $port
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
