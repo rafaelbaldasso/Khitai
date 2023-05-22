@@ -44,8 +44,11 @@ else
                 ;;
             "HTTP Headers & Methods")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Headers & Methods\033[m";echo
-                echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -X OPTIONS -s\033[m';echo
-                curl -I $target -L -k -X OPTIONS -s
+                echo -e '\033[38;2;0;255;255mcurl -I http://'$target' -L -k -X OPTIONS -s --connect-timeout 15\033[m';echo
+                curl -I http://$target -L -k -X OPTIONS -s --connect-timeout 15
+		echo;echo "===========================================================================";echo;
+                echo -e '\033[38;2;0;255;255mcurl -I https://'$target' -L -k -X OPTIONS -s --connect-timeout 15\033[m';echo
+                curl -I https://$target -L -k -X OPTIONS -s --connect-timeout 15
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
@@ -85,7 +88,7 @@ else
 			then
 				echo;echo -e '\033[38;2;0;255;255msendemail -f spoofed@'$target' -t '$recipient' -u "Spoofing Test" -m "Domain '$target' vulnerable to mail spoofing." -o tls=no\033[m'
 				echo;sendemail -f spoofed@$target -t $recipient -u "Spoofing Test" -m "Domain $target vulnerable to mail spoofing." -o tls=no
-				echo;echo -e "\033[38;2;255;228;181m-> Spoofing Mail Sent.\033[m"
+				echo;echo -e "\033[38;2;255;228;181m-> Spoofing Mail Sent, check your inbox (if it goes to the spam folder, then it's not completely vulnerable).\033[m"
                 	fi
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
