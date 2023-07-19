@@ -27,7 +27,7 @@ else
     bold=$(tput bold)
     echo;echo -e "\033[38;2;255;228;181m** Choose an option to begin the tests **\033[m";echo
     PS3=$'\n''-> '
-    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Domain Spoofing" "Zone Transfer" "TCP Port Scan" "Slowloris DoS Test" "Quit")
+    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -97,6 +97,31 @@ else
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Zone Transfer\033[m";echo
                 echo -e "\033[38;2;0;255;255mfor nserver in \$(host -t ns "$target" | cut -d ' ' -f4 | sed 's/.$//');do host -l -a "$target" \$nserver;done\033[m";echo
 		for nserver in $(host -t ns $target | cut -d ' ' -f4 | sed 's/.$//');do host -l -a $target $nserver;done
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
+                exec $0 $1
+                ;;
+            "Wordpress Tests")
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Wordpress XML-RPC\033[m";echo
+                echo -e "\033[38;2;0;255;255mcurl https://"$1"/xmlrpc.php -s --connect-timeout 15\033[m";echo
+				curl https://$1/xmlrpc.php -s --connect-timeout 15 > /tmp/xmlrpc-test.html
+				isInFile=$(cat /tmp/xmlrpc-test.html | grep -c "XML-RPC")
+				if [ $isInFile -eq 0 ]; then
+					echo "XML-RPC not vulnerable."
+				else
+   					echo "XML-RPC vulnerable!";echo
+   					echo Response from the server: \"$(cat /tmp/xmlrpc-test.html)\";echo
+   					echo "URL: https://"$1"/xmlrpc.php"
+				fi
+				rm -rf /tmp/xmlrpc-test.html
+                echo;echo "===========================================================================";echo
+                echo -e "\033[38;2;220;20;60m${bold}>>> Wordpress WP-Cron\033[m";echo           
+				echo -e "\033[38;2;0;255;255mcurl -I https://"$1"/wp-cron.php -s --connect-timeout 15\033[m";echo
+				if [ $(curl -LI https://$1/wp-cron.php --connect-timeout 15 -o /dev/null -w '%{http_code}\n' -s) == "200" ]; then
+					echo "WP-Cron vulnerable!";echo
+					curl -I https://$1/wp-cron.php -s --connect-timeout 15
+					echo "URL: https://"$1"/wp-cron.php"
+				else
+					echo "WP-Cron not vulnerable.";fi
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
