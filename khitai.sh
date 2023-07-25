@@ -17,6 +17,12 @@ echo -e "\033[38;2;220;20;60m
        #######################
 \033[m"
 
+if [ "$EUID" -ne 0 ]
+    then
+        echo;echo "[!] You must run the tool as root!";echo
+        exit
+fi
+
 if [ "$1" == "" ]
 then
     echo;echo -e "\033[38;2;255;228;181m[>] Usage: $0 <domain>\033[m"
