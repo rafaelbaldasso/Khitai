@@ -8,7 +8,9 @@ fi
 
 echo;echo "-> Installing dependencies and starting services...";echo
 
-sudo apt install nmap sslscan dnsutils sendemail postfix -y
+sudo apt install nmap sslscan dnsutils sendemail postfix golang -y
+
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 
 sudo systemctl enable postfix && sudo service postfix start
 
