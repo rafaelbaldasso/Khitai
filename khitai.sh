@@ -33,7 +33,7 @@ else
     bold=$(tput bold)
     echo;echo -e "\033[38;2;255;228;181m** Choose an option to begin the tests **\033[m";echo
     PS3=$'\n''-> '
-    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "TCP Port Scan" "Slowloris DoS Test" "Quit")
+    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -66,6 +66,18 @@ else
                 echo -e '\033[38;2;0;255;255mwafw00f -o - '$proto'://'$target'\033[m';echo
                 wafw00f -o - $proto://$target
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
+                exec $0 $1
+                ;;
+            "Clickjacking")
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Clickjacking\033[m";echo
+                proto=$(~/go/bin/httpx -silent -u $target | cut -d ':' -f1)
+                echo -e '\033[38;2;0;255;255mpython3 shcheck.py '$proto'://'$target' -d | egrep "X-Frame-Options|Content-Security-Policy"\033[m';echo
+                python3 shcheck.py $proto://$target -d | egrep "X-Frame-Options|Content-Security-Policy";echo
+                echo '<html><head><title>Clickjacking Test</title></head><body><h1>Clickjacking Test</h1><p><b>'$proto'://'$target'</b></p><iframe src="'$proto'://'$target'" width="800" height="500" margin-top="100" scrolling="yes" style="opacity:0.5"></iframe></body></html>' > /tmp/cj-test.html
+				echo "Clickjacking Test HTML file (CTRL + CLICK to open):"
+				echo "file:///tmp/cj-test.html"
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
+                rm -rf /tmp/cj-test.html
                 exec $0 $1
                 ;;
             "Domain Spoofing")
