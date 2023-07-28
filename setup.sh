@@ -8,7 +8,7 @@ fi
 
 echo;echo "-> Installing dependencies and starting services...";echo
 
-sudo apt install nmap sslscan dnsutils sendemail postfix golang -y
+sudo apt install nmap sslscan dnsutils sendemail postfix golang subfinder -y
 
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 
