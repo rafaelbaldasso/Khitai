@@ -33,7 +33,7 @@ else
     bold=$(tput bold)
     echo;echo -e "\033[38;2;255;228;181m** Choose an option to begin the tests **\033[m";echo
     PS3=$'\n''-> '
-    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "TCP Port Scan" "Slowloris DoS Test" "Quit")
+    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -147,6 +147,36 @@ else
     				sed -e 's:*.::g';) | sort -u >> subs.txt
 				~/go/bin/httpx -silent -probe -list subs.txt | grep SUCCESS
 				rm subs.txt          
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
+                exec $0 $1
+                ;;
+            "Discovery")
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Subdomains\033[m";echo                
+				proto=$(~/go/bin/httpx -silent -u $target | cut -d ':' -f1)
+                echo -e '\033[38;2;0;255;255mdirb '$proto'://'$target' \033[m'
+                wordlist="/usr/share/wordlists/dirb/common.txt"
+				delay=200
+                echo;read -p $'\033[38;2;255;228;181m-> Target directory (i.e: /new/directory): \033[m' tgtdir
+				if [[ ! -z $tgtdir  ]]
+				then
+					target=$target$tgtdir
+				fi
+				echo;read -p $'\033[38;2;255;228;181m-> Extensions - ONLY searches for files with supplied extensions, NOT for directories) (i.e: .txt,.cfg): \033[m' extens
+				if [[ ! -z $extens  ]]
+				then
+					ext="-X "$extens
+				fi
+				echo;read -p $'\033[38;2;255;228;181m-> Delay (ms) - currently 200: \033[m' newdelay
+				if [[ ! -z $newdelay  ]]
+				then
+					delay=$newdelay
+				fi
+				echo;read -p $'\033[38;2;255;228;181m-> Wordlist - default /usr/share/wordlists/dirb/common.txt: \033[m' wlist
+				if [[ ! -z $wlist  ]]
+				then
+					wordlist=$wlist
+				fi
+				dirb $proto://$target $wordlist -w -r -z $delay $ext	
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
