@@ -151,9 +151,8 @@ else
                 exec $0 $1
                 ;;
             "Discovery")
-                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Subdomains\033[m";echo                
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Discovery - Directories and Files (dirb)\033[m"
 				proto=$(~/go/bin/httpx -silent -u $target | cut -d ':' -f1)
-                echo -e '\033[38;2;0;255;255mdirb '$proto'://'$target' \033[m'
                 wordlist="/usr/share/wordlists/dirb/common.txt"
 				delay=200
                 echo;read -p $'\033[38;2;255;228;181m-> Target directory (i.e: /new/directory): \033[m' tgtdir
@@ -176,7 +175,12 @@ else
 				then
 					wordlist=$wlist
 				fi
-				dirb $proto://$target $wordlist -w -r -z $delay $ext	
+				echo;read -p $'\033[38;2;255;228;181m-> Recursive - default enabled (d to disable): \033[m' recve
+				if [[ ! -z $recve  ]]
+				then
+					recursive="-r"
+				fi
+				dirb $proto://$target $wordlist -w $recursive -z $delay $ext	
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
                 ;;
