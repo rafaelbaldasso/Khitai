@@ -184,6 +184,7 @@ else
                 then
                 	recursive="-r"
                 fi
+                echo;echo -e "\033[38;2;0;255;255mdirb "$proto"://"$target" "$wordlist" -w "$recursive" -z "$delay" "$ext"\033[m"
                 dirb $proto://$target $wordlist -w $recursive -z $delay $ext	
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 exec $0 $1
