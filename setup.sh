@@ -19,4 +19,6 @@ wget https://raw.githubusercontent.com/Ogglas/Orignal-Slowloris-HTTP-DoS/master/
 
 chmod +x shcheck.py slowloris.pl
 
+python3 -m pip install --upgrade requests
+
 echo;echo "-> Done!";echo
