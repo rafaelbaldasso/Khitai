@@ -27,9 +27,13 @@ if [[ "$1" == "" ]] || [[ "$1" != http?(s)://* ]]; then
     echo -e "\033[38;2;255;228;181m[>] Example: $0 https://github.com\033[m";echo
     echo -e "\033[38;2;255;228;181m[!] If this is your first time using the tool, remember to install the dependencies by running the setup.sh as root!\033[m";echo
 else
-    target=$1
+    target=$(echo "$1" | sed 's,/$,,g')
+    targetclean=$(echo "$target" | sed 's,http://,,g' | sed 's,https://,,g')
+    domain=$(echo "$targetclean" | cut -d "/" -f1)
     bold=$(tput bold)
-    echo;echo -e "\033[38;2;255;228;181m** Choose an option to begin the tests **\033[m";echo
+    echo;echo -e "\033[38;2;255;228;181m>> Target: "$1"\033[m"
+    echo -e "\033[38;2;255;228;181m>> Clean URL: "$targetclean"\033[m"
+    echo -e "\033[38;2;255;228;181m>> Domain: "$domain"\033[m";echo
     PS3=$'\n''-> '
     options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
@@ -39,29 +43,25 @@ else
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers\033[m";echo
                 echo -e '\033[38;2;0;255;255mpython3 shcheck.py '$target'\033[m'
                 python3 shcheck.py $target
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "HTTP Headers & Methods")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Headers & Methods\033[m";echo
                 echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -X OPTIONS -s --connect-timeout 15\033[m';echo
                 curl -I $target -L -k -X OPTIONS -s --connect-timeout 15
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "SSL Scan")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> SSL Scans\033[m";echo
-                echo -e '\033[38;2;0;255;255msslscan '$target'\033[m';echo
-                sslscan $target
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo -e '\033[38;2;0;255;255msslscan '$domain'\033[m';echo
+                sslscan $domain
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Check WAF")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> WAF\033[m";echo
                 echo -e '\033[38;2;0;255;255mwafw00f -o - '$target'\033[m';echo
                 wafw00f -o - $target
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Clickjacking")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Clickjacking\033[m";echo
@@ -77,31 +77,29 @@ else
             "Domain Spoofing")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Domain Spoofing\033[m";echo
                 echo -e "\033[38;2;255;228;181m-> SPF: \033[m";echo
-                echo -e '\033[38;2;0;255;255mhost -t txt '$target'\033[m';echo
-                host -t txt $target
+                echo -e '\033[38;2;0;255;255mhost -t txt '$domain'\033[m';echo
+                host -t txt $domain
                 echo;echo -e "\033[38;2;255;228;181m-> DMARC: \033[m";echo
-                echo -e '\033[38;2;0;255;255mhost -t txt _dmarc.'$target'\033[m';echo
-                host -t txt _dmarc.$target
+                echo -e '\033[38;2;0;255;255mhost -t txt _dmarc.'$domain'\033[m';echo
+                host -t txt _dmarc.$domain
                 echo;read -p $'\033[38;2;255;228;181m-> DKIM Selector (optional for DKIM check): \033[m' selector
                 if [[ ! -z $selector  ]]; then
-                	echo;echo -e '\033[38;2;0;255;255mhost -t txt '$selector'._domainkey.'$target'\033[m';echo
-                	host -t txt $selector._domainkey.$target
+                	echo;echo -e '\033[38;2;0;255;255mhost -t txt '$selector'._domainkey.'$domain'\033[m';echo
+                	host -t txt $selector._domainkey.$domain
                 fi
                 echo;read -p $'\033[38;2;255;228;181m-> Send spoofing test - if yes, type the recipient | if no, just press ENTER: \033[m' recipient
                 if [[ ! -z $recipient  ]]; then
-                	echo;echo -e '\033[38;2;0;255;255msendemail -f spoofed@'$target' -t '$recipient' -u "Spoofing Test" -m "Domain '$target' vulnerable to mail spoofing." -o tls=no\033[m'
-                	echo;sendemail -f spoofed@$target -t $recipient -u "Spoofing Test" -m "Domain $target vulnerable to mail spoofing." -o tls=no
+                	echo;echo -e '\033[38;2;0;255;255msendemail -f spoofed@'$domain' -t '$recipient' -u "Spoofing Test" -m "Domain '$domain' vulnerable to mail spoofing." -o tls=no\033[m'
+                	echo;sendemail -f spoofed@$domain -t $recipient -u "Spoofing Test" -m "Domain $domain vulnerable to mail spoofing." -o tls=no
                 	echo;echo -e "\033[38;2;255;228;181m-> Spoofing Mail Sent, check your inbox (if it goes to the spam folder, then it's not completely vulnerable).\033[m"
                 fi
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Zone Transfer")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Zone Transfer\033[m";echo
-                echo -e "\033[38;2;0;255;255mfor nserver in \$(host -t ns "$target" | cut -d ' ' -f4 | sed 's/.$//');do host -l -a "$target" \$nserver;done\033[m";echo
-                for nserver in $(host -t ns $target | cut -d ' ' -f4 | sed 's/.$//');do host -l -a $target $nserver;done
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo -e "\033[38;2;0;255;255mfor nserver in \$(host -t ns "$domain" | cut -d ' ' -f4 | sed 's/.$//');do host -l -a "$domain" \$nserver;done\033[m";echo
+                for nserver in $(host -t ns $domain | cut -d ' ' -f4 | sed 's/.$//');do host -l -a $domain $nserver;done
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Wordpress Tests")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Wordpress XML-RPC\033[m";echo
@@ -125,21 +123,16 @@ else
                 	echo "URL: "$target"/wp-cron.php"
                 else
                 	echo "WP-Cron not vulnerable.";fi
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Subdomains")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Subdomains\033[m";echo                
-                subfinder -silent -d $target >> subs.txt
-                query="SELECT ci.NAME_VALUE NAME_VALUE FROM certificate_identity ci WHERE ci.NAME_TYPE = 'dNSName' AND reverse(lower(ci.NAME_VALUE)) LIKE reverse(lower('%.$target'));"
-                (echo $target; echo $query | \
-                psql -t -h crt.sh -p 5432 -U guest certwatch | \
-                sed -e 's:^ *::g' -e 's:^*\.::g' -e '/^$/d' | \
-                sed -e 's:*.::g';) | sort -u >> subs.txt
+                subfinder -silent -d $domain >> subs.txt
+                query="SELECT ci.NAME_VALUE NAME_VALUE FROM certificate_identity ci WHERE ci.NAME_TYPE = 'dNSName' AND reverse(lower(ci.NAME_VALUE)) LIKE reverse(lower('%.$domain'));"
+                (echo $domain; echo $query | psql -t -h crt.sh -p 5432 -U guest certwatch | sed -e 's:^ *::g' -e 's:^*\.::g' -e '/^$/d' | sed -e 's:*.::g';) | sort -u >> subs.txt
                 ~/go/bin/httpx -silent -probe -list subs.txt | grep SUCCESS
                 rm subs.txt          
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Discovery")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Discovery - Directories and Files (dirb)\033[m"
@@ -148,44 +141,31 @@ else
                 echo;echo -e "\033[38;2;0;255;255mCurrent target: "$target"/\033[m"
                 echo -e "\033[38;2;0;255;255mChange the discovery options below or press ENTER to ignore.\033[m"
                 echo;read -p $'\033[38;2;255;228;181m-> Change default target directory (i.e: /new/directory): \033[m' tgtdir
-                if [[ ! -z $tgtdir  ]]; then
-                	target=$target$tgtdir
-                fi
+                if [[ ! -z $tgtdir  ]]; then target=$target$tgtdir; fi
                 echo;read -p $'\033[38;2;255;228;181m-> File extensions - disables the scan for directories (i.e: .txt,.cfg): \033[m' extens
-                if [[ ! -z $extens  ]]; then
-                	ext="-X "$extens
-                fi
+                if [[ ! -z $extens  ]]; then ext="-X "$extens; fi
                 echo;read -p $'\033[38;2;255;228;181m-> Delay (ms) - default 200: \033[m' newdelay
-                if [[ ! -z $newdelay  ]]; then
-                	delay=$newdelay
-                fi
+                if [[ ! -z $newdelay  ]]; then delay=$newdelay; fi
                 echo;read -p $'\033[38;2;255;228;181m-> Custom wordlist - default /usr/share/wordlists/dirb/common.txt: \033[m' wlist
-                if [[ ! -z $wlist  ]]; then
-                	wordlist=$wlist
-                fi
+                if [[ ! -z $wlist  ]]; then wordlist=$wlist; fi
                 echo;read -p $'\033[38;2;255;228;181m-> Recursive - default enabled (d to disable): \033[m' recve
-                if [[ $recve == "d" ]] || [[ $recve == "D"  ]]; then
-                	recursive="-r"
-                fi
+                if [[ $recve == "d" ]] || [[ $recve == "D"  ]]; then recursive="-r"; fi
                 echo;echo -e "\033[38;2;0;255;255mdirb "$target" "$wordlist" "$recursive" -z "$delay" "$ext"\033[m"
                 dirb $target $wordlist $recursive -z $delay $ext	
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "TCP Port Scan")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> TCP Port Scan\033[m";echo
-                echo -e "\033[38;2;0;255;255mnmap -Pn -n -p- -T4 --open "$target"\033[m";echo
-                nmap -Pn -n -p- -T4 --open $target
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo -e "\033[38;2;0;255;255mnmap -Pn -n -p- -T4 --open "$domain"\033[m";echo
+                nmap -Pn -n -p- -T4 --open $domain
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Slowloris DoS Test")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Slowloris DoS Test\033[m";echo
                 read -p $'\033[38;2;255;228;181m-> Target port: \033[m' port
-                echo;echo -e "\033[38;2;0;255;255mperl slowloris.pl -test -dns "$target" -port "$port"\033[m";echo
-                perl slowloris.pl -test -dns $target -port $port
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
-                exec $0 $1
+                echo;echo -e "\033[38;2;0;255;255mperl slowloris.pl -test -dns "$domain" -port "$port"\033[m";echo
+                perl slowloris.pl -test -dns $domain -port $port
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Quit")
                 clear
