@@ -20,5 +20,6 @@ wget https://raw.githubusercontent.com/Ogglas/Orignal-Slowloris-HTTP-DoS/master/
 chmod +x shcheck.py slowloris.pl
 
 python3 -m pip install --upgrade requests
+python3 -m pip install ultimate_sitemap_parser
 
 echo;echo "-> Done!";echo
