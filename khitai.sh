@@ -32,10 +32,9 @@ else
     domain=$(echo "$targetclean" | cut -d "/" -f1)
     bold=$(tput bold)
     echo;echo -e "\033[38;2;255;228;181m>> Target: "$1"\033[m"
-    echo -e "\033[38;2;255;228;181m>> Clean URL: "$targetclean"\033[m"
     echo -e "\033[38;2;255;228;181m>> Domain: "$domain"\033[m";echo
     PS3=$'\n''-> '
-    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
+    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Sitemap Scraping" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -131,7 +130,16 @@ else
                 query="SELECT ci.NAME_VALUE NAME_VALUE FROM certificate_identity ci WHERE ci.NAME_TYPE = 'dNSName' AND reverse(lower(ci.NAME_VALUE)) LIKE reverse(lower('%.$domain'));"
                 (echo $domain; echo $query | psql -t -h crt.sh -p 5432 -U guest certwatch | sed -e 's:^ *::g' -e 's:^*\.::g' -e '/^$/d' | sed -e 's:*.::g';) | sort -u >> subs.txt
                 ~/go/bin/httpx -silent -probe -list subs.txt | grep SUCCESS
-                rm subs.txt          
+                rm -rf subs.txt          
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
+                ;;
+            "Sitemap Scraping")
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Sitemap Scraping\033[m";echo
+                python3 sitemap_scraper.py $target > /tmp/sitemap_temp.txt
+                cat /tmp/sitemap_temp.txt | cut -d "=" -f2 | cut -d "," -f1 | sort -u > sitemap.txt
+                rm -rf /tmp/sitemap_temp.txt
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Sitemap Scraping\033[m";echo
+                echo "URLs saved to file "$(/bin/pwd)"/sitemap.txt"
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Discovery")
