@@ -31,8 +31,7 @@ else
     targetclean=$(echo "$target" | sed 's,http://,,g' | sed 's,https://,,g')
     domain=$(echo "$targetclean" | cut -d "/" -f1)
     bold=$(tput bold)
-    echo;echo -e "\033[38;2;255;228;181m>> Target: "$1"\033[m"
-    echo -e "\033[38;2;255;228;181m>> Domain: "$domain"\033[m";echo
+    echo;echo -e "\033[38;2;255;228;181m>> Target: "$1"\033[m";echo
     PS3=$'\n''-> '
     options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Sitemap Scraping" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
@@ -46,7 +45,9 @@ else
                 ;;
             "HTTP Headers & Methods")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Headers & Methods\033[m";echo
-                echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -X OPTIONS -s --connect-timeout 15\033[m';echo
+                echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -s --connect-timeout 15\033[m';echo
+                curl -I $target -L -k -s --connect-timeout 15
+                echo;echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -X OPTIONS -s --connect-timeout 15\033[m';echo
                 curl -I $target -L -k -X OPTIONS -s --connect-timeout 15
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
