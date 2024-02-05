@@ -44,11 +44,17 @@ else
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "HTTP Headers & Methods")
-                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Headers & Methods\033[m";echo
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Response Headers\033[m";echo
                 echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -s --connect-timeout 15\033[m';echo
                 curl -I $target -L -k -s --connect-timeout 15
+                echo;echo "===========================================================================";echo
+                echo -e "\033[38;2;220;20;60m${bold}>>> HTTP Methods\033[m"
                 echo;echo -e '\033[38;2;0;255;255mcurl -I '$target' -L -k -X OPTIONS -s --connect-timeout 15\033[m';echo
                 curl -I $target -L -k -X OPTIONS -s --connect-timeout 15
+                echo;echo "===========================================================================";echo
+                echo -e "\033[38;2;220;20;60m${bold}>>> HTTP TRACE\033[m"
+                echo;echo -e '\033[38;2;0;255;255mcurl -k -X TRACE '$target' -L -s -I -H "Cookie: test" --connect-timeout 15\033[m';echo
+                curl -k -X TRACE $target -L -s -I -H "Cookie: test" --connect-timeout 15
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "SSL Scan")
