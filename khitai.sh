@@ -39,8 +39,8 @@ else
         case $opt in
             "Security Headers")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers\033[m";echo
-                echo -e '\033[38;2;0;255;255mshcheck.py '$target'\033[m'
-                shcheck.py $target
+                echo -e '\033[38;2;0;255;255mshcheck.py '$target' -d\033[m'
+                shcheck.py $target -d
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "HTTP Headers & Methods")
