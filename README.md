@@ -1,11 +1,13 @@
 ## A pentesting hub for recon and PoCs - Tested on Kali Linux
+
+> An improved Python version is under development!
   
 ### # Installation:  
 ```
-git clone https://github.com/rafaelbaldasso/Khitai  
-cd Khitai  
-chmod +x *
-sudo setup.sh
+git clone https://github.com/rafaelbaldasso/Khitai; \
+cd Khitai; \
+chmod +x *; \
+sudo setup.sh;
 ```
   
 > For the Postfix configuration, just keep advancing with the default configs.  
