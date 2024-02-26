@@ -3,11 +3,9 @@
 > An improved Python version is under development!
   
 ### # Installation:  
+Copy the command below and paste it into your Kali terminal
 ```
-git clone https://github.com/rafaelbaldasso/Khitai; \
-cd Khitai; \
-chmod +x *; \
-sudo setup.sh;
+git clone https://github.com/rafaelbaldasso/Khitai; cd Khitai; chmod +x *; sudo ./setup.sh
 ```
   
 > For the Postfix configuration, just keep advancing with the default configs.  
