@@ -33,14 +33,14 @@ else
     bold=$(tput bold)
     echo;echo -e "\033[38;2;255;228;181m>> Target: "$1"\033[m";echo
     PS3=$'\n''-> '
-    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "CORS" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Sitemap Scraping" "Discovery" "TCP Port Scan" "Slowloris DoS Test" "Quit")
+    options=("Security Headers" "HTTP Headers & Methods" "SSL Scan" "Check WAF" "Clickjacking" "CORS" "Domain Spoofing" "Zone Transfer" "Wordpress Tests" "Subdomains" "Sitemap Scraping" "Discovery" "TCP Port Scan" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
             "Security Headers")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Security Headers\033[m";echo
-                echo -e '\033[38;2;0;255;255mpython3 shcheck.py '$target'\033[m'
-                python3 shcheck.py $target
+                echo -e '\033[38;2;0;255;255mshcheck.py '$target'\033[m'
+                shcheck.py $target
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "HTTP Headers & Methods")
@@ -71,8 +71,8 @@ else
                 ;;
             "Clickjacking")
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Clickjacking\033[m";echo
-                echo -e '\033[38;2;0;255;255mpython3 shcheck.py '$target' -d | egrep "X-Frame-Options|Content-Security-Policy"\033[m';echo
-                python3 shcheck.py $target -d | egrep "X-Frame-Options|Content-Security-Policy";echo
+                echo -e '\033[38;2;0;255;255mshcheck.py '$target' -d | egrep "X-Frame-Options|Content-Security-Policy"\033[m';echo
+                shcheck.py $target -d | egrep "X-Frame-Options|Content-Security-Policy";echo
                 echo '<html><head><title>Clickjacking Test</title></head><body><h1>Clickjacking Test</h1><p><b>'$target'</b></p><iframe src="'$target'" width="800" height="500" margin-top="100" scrolling="yes" style="opacity:0.5"></iframe></body></html>' > /tmp/cj-test.html
                 echo "Clickjacking Test HTML file (CTRL + CLICK to open):"
                 echo "file:///tmp/cj-test.html"
@@ -191,13 +191,6 @@ else
                 clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> TCP Port Scan\033[m";echo
                 echo -e "\033[38;2;0;255;255mnmap -Pn -n -p- -T4 --open "$domain"\033[m";echo
                 nmap -Pn -n -p- -T4 --open $domain
-                echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
-                ;;
-            "Slowloris DoS Test")
-                clear;echo;echo -e "\033[38;2;220;20;60m${bold}>>> Slowloris DoS Test\033[m";echo
-                read -p $'\033[38;2;255;228;181m-> Target port: \033[m' port
-                echo;echo -e "\033[38;2;0;255;255mperl slowloris.pl -test -dns "$domain" -port "$port"\033[m";echo
-                perl slowloris.pl -test -dns $domain -port $port
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
             "Quit")
