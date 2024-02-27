@@ -154,7 +154,7 @@ else
                 subfinder -silent -d $domain >> subs.txt
                 query="SELECT ci.NAME_VALUE NAME_VALUE FROM certificate_identity ci WHERE ci.NAME_TYPE = 'dNSName' AND reverse(lower(ci.NAME_VALUE)) LIKE reverse(lower('%.$domain'));"
                 (echo $domain; echo $query | psql -t -h crt.sh -p 5432 -U guest certwatch | sed -e 's:^ *::g' -e 's:^*\.::g' -e '/^$/d' | sed -e 's:*.::g';) | sort -u >> subs.txt
-                ~/go/bin/httpx -silent -probe -list subs.txt | grep SUCCESS
+                httpx -silent -probe -list subs.txt | grep SUCCESS
                 rm -rf subs.txt          
                 echo;read -p $'\033[38;2;255;215;0m< Press ENTER to continue >\033[m'; exec $0 $1
                 ;;
