@@ -21,6 +21,8 @@ python khitai.py -h
    [!] Usage: python3 khitai.py <target>
    [>] e.g: python3 khitai.py https://github.com
 
+------------------------------------------------------------------------------
+
 python khitai.py https://site.com
 
                   .
@@ -38,7 +40,7 @@ python khitai.py https://site.com
        #######################       https://github.com/rafaelbaldasso
 
 
->> Target: http://site.com
+>> Target: https://site.com
 
 [0] Exit
 [1] Security Headers        [4] SSL Tests       [7] Zone Transfer
