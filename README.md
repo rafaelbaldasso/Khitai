@@ -5,6 +5,12 @@
 ```
 wget https://raw.githubusercontent.com/rafaelbaldasso/Khitai/main/khitai.py
 
+or
+
+git clone https://github.com/rafaelbaldasso/Khitai
+
+------------------------------------------------------------------------------
+
 python khitai.py -i
 # Requires an elevated terminal (sudo su) or the sudo password (asked during the process)
 
