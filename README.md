@@ -6,7 +6,7 @@
 wget https://raw.githubusercontent.com/rafaelbaldasso/Khitai/main/khitai.py
 
 python khitai.py -i
-# Requires an elevated terminal to install everything smoothly (sudo su) or the sudo password (asked during the process)
+# Requires an elevated terminal (sudo su) or the sudo password (asked during the process)
 
 > For the Postfix configuration, just keep advancing with the default configs.  
 ```
