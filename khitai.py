@@ -176,7 +176,7 @@ def ssl_tests():
 # Tests for CORS Arbitrary Origin + Allow Credentials and generates a PoC
 def cors():
 	try:
-		command1 = f'curl {target} -H "Origin: https://poc-cors.com" -I -s -k -L | egrep "Access-Control-Allow-Origin|Access-Control-Allow-Credentials" | sort -u'
+		command1 = f'curl {target} -H "Origin: https://poc-cors.com" -I -s -k -L | egrep -i "Access-Control-Allow-Origin|Access-Control-Allow-Credentials" | sort -u'
 		print(f'\n{red}{bold}>>> CORS Arbitrary Origin + Allow Credentials PoC{endbold}{endcolor}\n')
 		print(f'{blue}{command1}{endcolor}\n')
 		os.system(command1)
