@@ -25,7 +25,7 @@ python khitai.py -h
    -i   Install all the dependencies
 
    [!] Usage: python3 khitai.py <target>
-   [>] e.g: python3 khitai.py https://github.com
+   [>] e.g: python3 khitai.py https://site.com
 
 ------------------------------------------------------------------------------
 
