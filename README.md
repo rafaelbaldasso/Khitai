@@ -1,4 +1,4 @@
-## A pentesting hub for recon and PoCs
+## A pentesting hub for web recon and PoCs
 ### Meant to be used in Kali Linux with Python3
 
 ### # Installation:  
